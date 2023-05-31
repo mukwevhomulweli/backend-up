@@ -91,10 +91,10 @@ exports.signInOTP = (req, res) => {
             const mailConfigurations = {
                 from: "langu.maluks@gmail.com",
                 to: req.body.email,
-                subject: "Payment OTP",
+                subject: "Sign in OTP",
                 // This would be the text of email body
                 html:
-                    "<h1>Your OTP(One-time-pin)</h1><br/>" +
+                    "<h1>Your OTP(One-time-pin) is : </h1><br/>" +
                     req.body.email +
                     `<p>Your OTP is: <strong>${number}</strong><br/><br/>
                                Made with ❤️ By Mulweli</p>`,
@@ -119,3 +119,44 @@ exports.signInOTP = (req, res) => {
             }
         });
 };
+exports.resendOTP = (req, res) => {
+    User.findOne({
+        email: req.body.email
+    }).then((user) => {
+        if (!user) {
+            res.status(409).send({
+                message: 'User does not exist'
+            })
+        }
+
+
+        let token = jwt.sign({ id: user._id }, config.secret, {
+            expiresIn: 86400,
+        });
+        let number = Math.floor(1000 + Math.random() * 9000);
+        const mailConfigurations = {
+            from: "langu.maluks@gmail.com",
+            to: req.body.email,
+            subject: "Sign in OTP",
+            // This would be the text of email body
+            html:
+                "<h1>Your OTP(One-time-pin) is : </h1><br/>" +
+                req.body.email +
+                `<p>Your OTP is: <strong>${number}</strong><br/><br/>
+                           Made with ❤️ By Mulweli</p>`,
+        };
+        // Send the mail upon everything above correct
+        transporter.sendMail(mailConfigurations, function (error, info) {
+            if (error) throw Error(error);
+            console.log(info)
+        });
+
+
+        res.status(200).send({
+            otp: number,
+            accessToken: token,
+            email: req.body.email
+        });
+
+    })
+}
