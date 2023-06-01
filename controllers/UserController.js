@@ -33,17 +33,10 @@ exports.create = (req, res) => {
     });
     User.findOne({ email: req.body.email }).then((userData) => {
         if (!userData) {
-
             user.save(user)
                 .then((data) => {
-                    res.send('succesfully posted');
+                    res.status(200).send(data);
                 })
-                .catch((err) => {
-                    res.status(500).send({
-                        message:
-                            err.message || "Some error occurred while creating the Tutorial.",
-                    });
-                });
         }
         else {
             res.status(409).send({
