@@ -13,8 +13,8 @@ app.listen(PORT, () => {
     console.log(`Listening to port : ${PORT}`)
 })
 
-const corsOptions = {
-    origin: "*",
+var corsOptions = {
+    origin: '*'
 };
 
 app.use(cors(corsOptions));
